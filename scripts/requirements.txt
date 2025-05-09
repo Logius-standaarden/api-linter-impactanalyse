@@ -1,0 +1,5 @@
+certifi==2025.4.26
+requests[security]==2.7.0
+PyYAML==6.0.2
+ruff==0.11.8
+pip-system-certs==4.0
