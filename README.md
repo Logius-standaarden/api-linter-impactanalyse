@@ -5,7 +5,7 @@ Om te runnen, doe het volgende:
 ```sh
 cd scripts/
 ./install-python-dependencies.sh
-./venv/bin/activate
+source ./venv/bin/activate
 
 # Download de Zip van GitLab
 python download-api-register.py
