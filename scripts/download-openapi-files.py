@@ -6,7 +6,6 @@ import ssl
 import urllib.request
 import yaml
 from pathlib import Path
-from os import path
 
 IMPACT_ANALYSE_DIRECTORY = Path(__file__).parent.parent.resolve()
 API_REGISTER_DIRECTORY = IMPACT_ANALYSE_DIRECTORY / "api-register"
@@ -34,7 +33,7 @@ def get_specification_url_for_api_definition(api_definition):
 api_definitions = [
     file
     for file in os.listdir(API_DEFINITIONS_DIRECTORY)
-    if path.isfile(API_DEFINITIONS_DIRECTORY / file)
+    if os.path.isfile(API_DEFINITIONS_DIRECTORY / file)
 ]
 specification_urls = [
     (api_definition, specification_url)
