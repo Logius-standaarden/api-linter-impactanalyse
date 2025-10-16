@@ -15,19 +15,9 @@ SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 
 def get_specification_url_for_api_definition(api_definition):
-    with open(API_DEFINITIONS_DIRECTORY / api_definition) as yaml_file:
-        try:
-            yaml_object = yaml.safe_load(yaml_file)
-            environments = yaml_object.get("environments", [])
-
-            for environment in environments:
-                if environment["name"] == "production":
-                    return environment.get("specification_url", None)
-
-            return None
-        except yaml.YAMLError as exc:
-            print(exc)
-            sys.exit(1)
+    with open(API_DEFINITIONS_DIRECTORY / api_definition) as definition_file:
+        json_file = json.load(definition_file)
+        return json_file["oasUrl"]
 
 
 api_definitions = [
@@ -56,7 +46,6 @@ for api_definition, specification_url in specification_urls:
     print(f"Downloading {specification_url} for {api_definition}")
     try:
         request = urllib.request.Request(specification_url)
-        request.add_header("Accept", "application/json")
         with urllib.request.urlopen(
             request, timeout=3, context=SSL_CONTEXT
         ) as http_request:
