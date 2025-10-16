@@ -8,7 +8,7 @@ cd scripts/
 source .venv/bin/activate
 
 # Download de Zip van GitLab
-python download-api-register.py
+API_KEY=<api-key-for-api-register> python download-api-register.py
 # Download the `openapi.json` files van de API's uit het register
 python download-openapi-files.py
 # Run de linter voor 1 specifieke regel, in dit geval "nlgov:paths-no-trailing-slash"
