@@ -2,6 +2,7 @@ import json
 import os
 import requests
 import sys
+import urllib
 from pathlib import Path
 from os import path
 
@@ -29,8 +30,8 @@ while page < total_pages + 1:
         page += 1
         apis = apis_in_page.json()
         apis_in_api_register.extend(apis)
-        total_pages = int(apis_in_page.headers["x-total-pages"])
-        total_apis = int(apis_in_page.headers["x-total-count"])
+        total_pages = int(apis_in_page.headers["total-pages"])
+        total_apis = int(apis_in_page.headers["total-count"])
     except urllib.error.HTTPError as http_error:
         break
 
