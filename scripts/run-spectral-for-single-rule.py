@@ -8,40 +8,44 @@ from pathlib import Path
 IMPACT_ANALYSE_DIRECTORY = Path(__file__).parent.parent.resolve()
 OPEN_API_CACHE_DIRECTORY = IMPACT_ANALYSE_DIRECTORY / "api-register" / "open-api-specs"
 SPECTRAL_LINTER_LOCATION = (
-    IMPACT_ANALYSE_DIRECTORY.parent / "API-Design-Rules" / "linter" / "spectral.yml"
+    IMPACT_ANALYSE_DIRECTORY.parent / "API-Design-Rules" / "media" / "linter.yaml"
 )
 GENERATED_LINTER_LOCATION = (
-    IMPACT_ANALYSE_DIRECTORY / "api-register" / ".generated-spectral.yml"
+    IMPACT_ANALYSE_DIRECTORY / "api-register" / ".generated-linter.yml"
 )
 
 SPECTRAL_NO_ERROR_FOUND_MESSAGE = "No results with a severity of 'error' found!\n"
 
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("--rule")
+arg_parser.add_argument("--rule", action='append')
 script_arguments = arg_parser.parse_args()
 
-rule_to_run = script_arguments.rule
+rules_to_run = script_arguments.rule
+
+yaml_rules = {}
 
 with open(SPECTRAL_LINTER_LOCATION) as linter_yaml:
     linter_rules = yaml.safe_load(linter_yaml)["rules"]
-    if rule_to_run is None or rule_to_run not in linter_rules:
-        print(
-            f"""
-Did not specify a valid rule: "{rule_to_run}". Choose one of the following:
+    for rule_to_run in rules_to_run:
+        if rule_to_run is None or rule_to_run not in linter_rules:
+            print(
+                f"""
+    Did not specify a valid rule: "{rule_to_run}". Choose one of the following:
 
-%s
-"""
-            % "\n".join(linter_rules)
-        )
-        sys.exit(1)
+    %s
+    """
+                % "\n".join(linter_rules)
+            )
+            sys.exit(1)
 
-    for rule in linter_rules:
-        if rule == rule_to_run:
-            yaml_rule = linter_rules[rule]
+        for rule in linter_rules:
+            if rule == rule_to_run:
+                yaml_rules[rule_to_run] = linter_rules[rule]
 
 with open(GENERATED_LINTER_LOCATION, "w") as generated_linter:
     generated_yaml = dict(rules=dict())
-    generated_yaml["rules"][rule_to_run] = yaml_rule
+    for rule_to_run in rules_to_run:
+        generated_yaml["rules"][rule_to_run] = yaml_rules[rule_to_run]
     yaml.dump(generated_yaml, generated_linter, default_flow_style=False)
 
 total_specifications = 0

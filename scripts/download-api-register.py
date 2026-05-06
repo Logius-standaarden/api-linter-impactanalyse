@@ -14,7 +14,7 @@ IMPACT_ANALYSE_DIRECTORY = Path(__file__).parent.parent.resolve()
 API_REGISTER_DIRECTORY = IMPACT_ANALYSE_DIRECTORY / "api-register"
 API_DEFINITIONS_DIRECTORY = API_REGISTER_DIRECTORY / "definitions"
 
-API_REGISTER_API_ENDPOINT = "https://api.don.apps.digilab.network/api-register/v1/apis"
+API_REGISTER_API_ENDPOINT = "https://api.don.projects.digilab.network/api-register/v1/apis"
 API_REGISTER_HEADERS = {'x-api-key': os.environ['API_KEY']}
 # Pages are one-indexed in the register
 page = 1
@@ -28,7 +28,11 @@ while page < total_pages + 1:
     try:
         apis_in_page = requests.get(API_REGISTER_API_ENDPOINT, verify=False, headers=API_REGISTER_HEADERS, params={'perPage': '50', 'page': page})
         page += 1
-        apis = apis_in_page.json()
+        try:
+            apis = apis_in_page.json()
+        except json.decoder.JSONDecodeError as json_error:
+            print(f"Failed to decode json. Got the following instead: {apis_in_page.text}")
+            sys.exit(1)
         apis_in_api_register.extend(apis)
         total_pages = int(apis_in_page.headers["total-pages"])
         total_apis = int(apis_in_page.headers["total-count"])
